@@ -19,6 +19,7 @@ class PropertyController {
     const { latitude, longitude } = request.all()
 
     const properties = Property.query()
+      .with('images')
       .nearBy(latitude, longitude, 10) //acos not working on sqlite3
       .fetch()
 
@@ -74,6 +75,21 @@ class PropertyController {
    * @param {Response} ctx.response
    */
   async update({ params, request, response }) {
+    const property = await Property.findOrFail(params.id)
+
+    const data = request.only([
+      'title',
+      'address',
+      'latitude',
+      'longitude',
+      'price'
+    ])
+
+    property.merge(data)
+
+    await property.save()
+
+    return property
   }
 
   /**

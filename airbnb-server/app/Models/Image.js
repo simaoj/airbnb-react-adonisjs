@@ -1,26 +1,16 @@
 'use strict'
 
-const Schema = use('Schema')
+const Env = use('Env')
+const Model = use('Model')
 
-class ImageSchema extends Schema {
-    up() {
-        this.create('images', table => {
-            table.increments()
-            table
-                .integer('property_id')
-                .unsigned()
-                .references('id')
-                .inTable('properties')
-                .onUpdate('CASCADE')
-                .onDelete('CASCADE')
-            table.string('path').notNullable()
-            table.timestamps()
-        })
+class Image extends Model {
+    static get computed() {
+        return ['url']
     }
 
-    down() {
-        this.drop('images')
+    getUrl({ path }) {
+        return `${Env.get('APP_URL')}/images/${path}`
     }
 }
 
-module.exports = ImageSchema
+module.exports = Image
